@@ -2,6 +2,13 @@ const express = require('express')
 const router = express.Router()
 
 const ProductService = require('../services/products.service')
+const validatorHandler = require('../middleware/validator.handler')
+const {
+  createProductScheme,
+  getProductScheme,
+  updateProductScheme,
+} = require('../schemas/product.schema')
+
 const service = new ProductService()
 
 router.get('/', async (req, res) => {
@@ -14,37 +21,46 @@ router.get('/filter', (req, res) => {
   res.send('I am a filter')
 })
 
-router.get('/:id', async (req, res) => {
-  const { id } = req.params
+router.get(
+  '/:id',
+  validatorHandler(getProductScheme, 'params'),
+  async (req, res) => {
+    const { id } = req.params
 
-  const product = await service.findOne(id)
+    const product = await service.findOne(id)
 
-  res.json(product)
-})
+    res.json(product)
+  },
+)
 
-router.post('/', async (req, res) => {
-  const body = req.body
+router.post(
+  '/',
+  validatorHandler(createProductScheme, 'body'),
+  async (req, res) => {
+    const body = req.body
 
-  const newProduct = await service.create(body)
+    const newProduct = await service.create(body)
 
-  res.status(201).json({
-    message: 'Created',
-    data: newProduct,
-  })
-})
+    res.status(201).json({
+      message: 'Created',
+      data: newProduct,
+    })
+  },
+)
 
-router.patch('/:id', async (req, res) => {
-  const { id } = req.params
-  const body = req.body
+router.patch(
+  '/:id',
+  validatorHandler(getProductScheme, 'params'),
+  validatorHandler(updateProductScheme, 'body'),
+  async (req, res) => {
+    const { id } = req.params
+    const body = req.body
 
-  try {
     const updatedProduct = await service.update(id, body)
 
     res.json(updatedProduct)
-  } catch (e) {
-    res.status(404).json({ message: e.message })
-  }
-})
+  },
+)
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params
