@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const routerApi = require('./routes')
 const {
   logErrors,
@@ -8,8 +9,28 @@ const {
 
 const app = express()
 const port = 3000
+const whitelist = [
+  'http://localhost:3000',
+  'http://localhost:8080',
+  'http://localhost:4321',
+]
+const options = {
+  origin: (origin, callback) => {
+    if (whitelist.includes(origin)) {
+      return callback(null, true)
+    }
+
+    if (!origin) {
+      return callback(null, true)
+    }
+
+    return callback(new Error('Not allowed by CORS'))
+  },
+}
 
 app.use(express.json())
+app.disable('x-powered-by')
+app.use(cors(options))
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
