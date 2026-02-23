@@ -1,11 +1,11 @@
-const express = require('express')
-const cors = require('cors')
-const routerApi = require('./routes')
-const {
+import express from 'express'
+import cors, { type CorsOptions } from 'cors'
+import routerApi from './routes/index.js'
+import {
   logErrors,
   errorHandler,
   boomErrorHandler,
-} = require('./middleware/error.handler')
+} from './middleware/error.handler.js'
 
 const app = express()
 const port = process.env.PORT ?? 3000
@@ -14,7 +14,7 @@ const whitelist = [
   'http://localhost:8080',
   'http://localhost:4321',
 ]
-const options = {
+const options: CorsOptions = {
   origin: (origin, callback) => {
     if (whitelist.includes(origin)) {
       return callback(null, true)

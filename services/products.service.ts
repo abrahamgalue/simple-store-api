@@ -1,7 +1,17 @@
-const { faker } = require('@faker-js/faker')
-const boom = require('@hapi/boom')
+import { faker } from '@faker-js/faker'
+import boom from '@hapi/boom'
+
+interface Product {
+  id: string
+  name: string
+  price: number
+  image: string
+  isBlock?: boolean
+}
 
 class ProductService {
+  products: Product[]
+
   constructor() {
     this.products = []
     this.generate()
@@ -21,7 +31,7 @@ class ProductService {
     }
   }
 
-  async create(data) {
+  async create(data: Product) {
     const newProduct = {
       id: faker.string.uuid(),
       name: data.name ?? faker.commerce.productName(),
@@ -42,7 +52,7 @@ class ProductService {
     })
   }
 
-  async findOne(id) {
+  async findOne(id: Product['id']) {
     const product = this.products.find((product) => product.id === id)
 
     if (!product) {
@@ -56,7 +66,7 @@ class ProductService {
     return product
   }
 
-  async update(id, changes) {
+  async update(id: Product['id'], changes: Product) {
     const index = this.products.findIndex((product) => product.id === id)
 
     if (index === -1) {
@@ -75,7 +85,7 @@ class ProductService {
     return this.products[index]
   }
 
-  async delete(id) {
+  async delete(id: Product['id']) {
     const index = this.products.findIndex((product) => product.id === id)
 
     if (index === -1) {
@@ -88,4 +98,4 @@ class ProductService {
   }
 }
 
-module.exports = ProductService
+export default ProductService
